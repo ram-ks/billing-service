@@ -7,4 +7,6 @@ data class Bill(
     val discountPercentage: Double,
     val amountCoveredByInsurance: Double,
     val afterTaxAndDiscount: Double,
+    val taxAmount: Double,
+    val discountAmount: Double,
 )

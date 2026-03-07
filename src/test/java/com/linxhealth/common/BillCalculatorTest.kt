@@ -58,6 +58,50 @@ class BillCalculatorTest {
         assertEquals(bill.afterTaxAndDiscount, bill.amountCoveredByInsurance + bill.coPayAmount, 0.001)
     }
 
+    @Test
+    fun `complete bill for 1000 base fee with no prior visits`() {
+        // fee=1000, discount=0, afterDiscount=1000, GST=120, total=1120
+        // insurance=1008, copay=112
+        val bill = BillCalculator.calculate(fee = 1000.0, completedAppointments = 0)
+
+        assertEquals(1000.0, bill.fee,             0.001)
+        assertEquals(0.0,    bill.discountPercentage,      0.001)
+        assertEquals(1000.0, bill.amountAfterDiscount,  0.001)
+        assertEquals(1120.0, bill.afterTaxAndDiscount,          0.001)
+        assertEquals(1008.0, bill.amountCoveredByInsurance,      0.001)
+        assertEquals(112.0,  bill.coPayAmount,          0.001)
+        assertEquals(120.0,  bill.taxAmount,            0.001)
+    }
+
+    @Test
+    fun `complete bill for 1500 base fee with 5 prior visits`() {
+        // fee=1500, discount=5%, discountAmount=75, afterDiscount=1425
+        // GST=171, total=1596, insurance=1436.4, copay=159.6
+        val bill = BillCalculator.calculate(fee = 1500.0, completedAppointments = 5)
+
+        assertEquals(1500.0, bill.fee,             0.001)
+        assertEquals(5.0,    bill.discountPercentage,      0.001)
+        assertEquals(1425.0, bill.amountAfterDiscount,  0.001)
+        assertEquals(1596.0, bill.afterTaxAndDiscount,          0.001)
+        assertEquals(1436.4, bill.amountCoveredByInsurance,      0.001)
+        assertEquals(159.6,  bill.coPayAmount,          0.001)
+        assertEquals(171.0,  bill.taxAmount,            0.001)
+    }
+
+    @Test
+    fun `complete bill for 2000 base fee with max discount`() {
+        // fee=2000, discount=10%, discountAmount=200, afterDiscount=1800
+        // GST=216, total=2016, insurance=1814.4, copay=201.6
+        val bill = BillCalculator.calculate(fee = 2000.0, completedAppointments = 10)
+
+        assertEquals(2000.0, bill.fee,             0.001)
+        assertEquals(10.0,   bill.discountPercentage,      0.001)
+        assertEquals(1800.0, bill.amountAfterDiscount,  0.001)
+        assertEquals(2016.0, bill.afterTaxAndDiscount,          0.001)
+        assertEquals(1814.4, bill.amountCoveredByInsurance,      0.001)
+        assertEquals(201.6,  bill.coPayAmount,          0.001)
+        assertEquals(216.0,  bill.taxAmount,            0.001)
+    }
 
 
 }

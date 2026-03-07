@@ -2,6 +2,7 @@ package com.linxhealth.common
 
 import com.linxhealth.model.Bill
 
+// TODO: can we do this via Singleton?
 object BillCalculator {
 
     fun calculate(fee: Double, completedAppointments: Int): Bill {
@@ -11,10 +12,12 @@ object BillCalculator {
         val discountedAmount = fee - discount
 
         // apply tax
+        // TODO: remove magic numbers
         val withTax = discountedAmount * 0.12
         val afterTaxAndDiscount = discountedAmount + withTax
 
         // insurance amount
+        // TODO: remove magic numbers
         val amountCoveredByInsurance = afterTaxAndDiscount * 0.90
         val coPayAmount = afterTaxAndDiscount - amountCoveredByInsurance
 
@@ -24,7 +27,9 @@ object BillCalculator {
             amountAfterDiscount = discountedAmount,
             amountCoveredByInsurance = amountCoveredByInsurance,
             coPayAmount = coPayAmount,
-            afterTaxAndDiscount = afterTaxAndDiscount
+            afterTaxAndDiscount = afterTaxAndDiscount,
+            discountAmount = discount, // TODO: do we need this
+            taxAmount = withTax,
         )
     }
 }
