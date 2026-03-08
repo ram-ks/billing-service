@@ -1,10 +1,7 @@
-package com.linxhealth.controller
+package com.linxhealth.controller.mapper
 
 import com.linxhealth.controller.dto.InsuranceRequest
 import com.linxhealth.controller.dto.PatientRequest
-import com.linxhealth.controller.dto.PatientResponse
-import com.linxhealth.controller.mapper.toModel
-import com.linxhealth.controller.mapper.toResponse
 import com.linxhealth.model.Insurance
 import com.linxhealth.model.Patient
 import org.junit.jupiter.api.Test
@@ -52,7 +49,7 @@ class PatientMapperTest {
 
         val response = patient.toResponse()
 
-        assertEquals("2323", response.id)
+        assertEquals(1, response.id)
         assertEquals("John", response.firstName)
         assertEquals(123, response.insurance.binNumber)
     }

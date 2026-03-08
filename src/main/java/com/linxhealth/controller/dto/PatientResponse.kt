@@ -9,7 +9,7 @@ data class InsuranceResponse(
 )
 
 data class PatientResponse(
-    val id: String,
+    val id: Int,
     @JsonProperty("first_name") val firstName: String,
     @JsonProperty("last_name") val lastName: String,
     val dob: String,

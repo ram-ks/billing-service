@@ -14,7 +14,7 @@ import java.time.LocalDate
 
 class PatientServiceTest {
 
-    private lateinit var repository: PatientRepository
+    private lateinit var patientRepository: PatientRepository
     private lateinit var service: PatientService
 
     private fun validPatient() = Patient(
@@ -28,15 +28,15 @@ class PatientServiceTest {
 
     @BeforeEach
     fun setup() {
-        repository = mock()
-        service = PatientService(repository)
+        patientRepository = mock()
+        service = PatientService(patientRepository)
     }
 
     @Test
     fun `register should save and return patient`() {
         val patient = validPatient()
         val saved = patient.copy(id = 1)
-        whenever(repository.save(patient)).thenReturn(saved)
+        whenever(patientRepository.save(patient)).thenReturn(saved)
 
         val result = service.save(patient)
 
@@ -47,7 +47,7 @@ class PatientServiceTest {
     @Test
     fun `getById should return patient when found`() {
         val patient = validPatient().copy(id = 1)
-        whenever(repository.findById(1)).thenReturn(patient)
+        whenever(patientRepository.findById(1)).thenReturn(patient)
 
         val result = service.getById(1)
 
@@ -57,7 +57,7 @@ class PatientServiceTest {
 
     @Test
     fun `getById should throw NotFoundException when patient does not exist`() {
-        whenever(repository.findById(99)).thenReturn(null)
+        whenever(patientRepository.findById(99)).thenReturn(null)
 
         assertThrows<NotFoundException> {
             service.getById(99)
@@ -66,7 +66,7 @@ class PatientServiceTest {
 
     @Test
     fun `getById exception message should contain the id`() {
-        whenever(repository.findById(99)).thenReturn(null)
+        whenever(patientRepository.findById(99)).thenReturn(null)
 
         val exception = assertThrows<NotFoundException> {
             service.getById(99)
@@ -78,7 +78,7 @@ class PatientServiceTest {
     @Test
     fun `getAll should return all registered patients`() {
         val patients = listOf(validPatient().copy(id = 1), validPatient().copy(id = 2))
-        whenever(repository.findAll()).thenReturn(patients)
+        whenever(patientRepository.findAll()).thenReturn(patients)
 
         val result = service.getAll()
 
@@ -87,10 +87,9 @@ class PatientServiceTest {
 
     @Test
     fun `getAll should return empty list when no patients registered`() {
-        whenever(repository.findAll()).thenReturn(emptyList())
+        whenever(patientRepository.findAll()).thenReturn(emptyList())
 
         val result = service.getAll()
-
         assertTrue(result.isEmpty())
     }
 }

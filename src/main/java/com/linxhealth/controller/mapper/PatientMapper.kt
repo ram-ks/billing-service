@@ -23,7 +23,7 @@ fun PatientRequest.toModel(): Patient {
 
 fun Patient.toResponse(): PatientResponse {
     return PatientResponse(
-        id = "2323",
+        id = id!!,
         firstName = firstName,
         lastName = lastName,
         dob = dateOfBirth.format(DOB_FORMATTER),
