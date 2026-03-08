@@ -23,8 +23,8 @@ class PatientMapperTest {
             age = 33,
             insurance = InsuranceRequest(
                 binNumber = 123,
-                pcnNumber = 45,
-                memberId = 345
+                pcnNumber = "45",
+                memberId = "345"
             )
         )
 
@@ -38,14 +38,15 @@ class PatientMapperTest {
     @Test
     fun `should convert Patient to PatientResponse`() {
         val patient = Patient(
+            id = 1,
             firstName = "John",
             lastName = "Doe",
             dateOfBirth = LocalDate.of(1992, 5, 10),
             age = 34,
             insurance = Insurance(
                 binNumber = 123,
-                pcnNumber = 456,
-                memberId = 789
+                pcnNumber = "456",
+                memberId = "789"
             )
         )
 

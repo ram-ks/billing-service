@@ -3,7 +3,7 @@ package com.linxhealth.model
 import java.time.LocalDate
 
 data class Patient(
-//    val id: String, //todo: implement this logic
+    val id: Int? = null,
     val firstName: String,
     val lastName: String,
     val age: Int,

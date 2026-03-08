@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 data class InsuranceResponse(
     @JsonProperty("bin_number") val binNumber: Int,
-    @JsonProperty("pcn_number") val pcnNumber: Int,
-    @JsonProperty("member_id") val memberId: Int,
+    @JsonProperty("pcn_number") val pcnNumber: String,
+    @JsonProperty("member_id") val memberId: String,
 )
 
 data class PatientResponse(

@@ -38,6 +38,12 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.mockito.kotlin</groupId>
+      <artifactId>mockito-kotlin</artifactId>
+      <version>3.2.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>io.micronaut.serde</groupId>
       <artifactId>micronaut-serde-jackson</artifactId>
       <scope>compile</scope>
