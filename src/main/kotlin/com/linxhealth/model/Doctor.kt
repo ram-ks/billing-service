@@ -3,7 +3,7 @@ package com.linxhealth.model
 import java.time.LocalDate
 
 data class Doctor(
-    val id: String,
+    val id: Int? = null,
     val firstName: String,
     val lastName: String,
     val npiNumber: String,
@@ -13,5 +13,8 @@ data class Doctor(
 
 enum class Speciality {
     GENERAL,
-    CARDIOLOGY
+    CARDIOLOGY,
+    ORTHOPEDICS,
+    DERMATOLOGY,
+    NEUROLOGY
 }
