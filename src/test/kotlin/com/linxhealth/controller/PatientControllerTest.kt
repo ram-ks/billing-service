@@ -7,18 +7,28 @@ import com.linxhealth.model.Insurance
 import com.linxhealth.model.Patient
 import com.linxhealth.service.PatientService
 import io.micronaut.http.HttpStatus
+import io.micronaut.test.annotation.MockBean
+import io.micronaut.test.extensions.junit5.annotation.MicronautTest
+import jakarta.inject.Inject
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.time.LocalDate
 
+@MicronautTest
 class PatientControllerTest {
 
-    private val patientService: PatientService = mock()
-    private val controller = PatientController(patientService)
+    @Inject
+    lateinit var controller: PatientController
+
+    @Inject
+    lateinit var patientService: PatientService
+
+    @MockBean(PatientService::class)
+    fun patientService(): PatientService = mock()
 
     // ── Fixtures ──────────────────────────────────────────────────────────────
 
@@ -43,7 +53,7 @@ class PatientControllerTest {
 
     @Test
     fun `register should return 201 with saved patient`() {
-        whenever(patientService.save(any())).thenReturn(savedPatient())
+        whenever(patientService.save(anyOrNull())).thenReturn(savedPatient())
 
         val response = controller.save(validRequest())
 

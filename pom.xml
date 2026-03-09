@@ -16,7 +16,6 @@
     <packaging>jar</packaging>
     <jdk.version>21</jdk.version>
     <release.version>21</release.version>
-    <micronaut.version>4.10.10</micronaut.version>
     <micronaut.runtime>netty</micronaut.runtime>
     <micronaut.aot.enabled>false</micronaut.aot.enabled>
     <micronaut.aot.packageName>com.linxhealth.aot.generated</micronaut.aot.packageName>
@@ -38,25 +37,28 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.mockito.kotlin</groupId>
-      <artifactId>mockito-kotlin</artifactId>
-      <version>3.2.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>io.micronaut.serde</groupId>
       <artifactId>micronaut-serde-jackson</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>io.micronaut</groupId>
+      <artifactId>micronaut-inject</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-stdlib-jdk8</artifactId>
+      <version>${kotlin.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-reflect</artifactId>
+      <version>${kotlin.version}</version>
+    </dependency>
+    <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.micronaut</groupId>
-      <artifactId>micronaut-http-client</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>io.micronaut.test</groupId>
@@ -74,9 +76,10 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.jetbrains.kotlin</groupId>
-      <artifactId>kotlin-stdlib-jdk8</artifactId>
-      <version>${kotlin.version}</version>
+      <groupId>org.mockito.kotlin</groupId>
+      <artifactId>mockito-kotlin</artifactId>
+      <version>5.2.1</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.jetbrains.kotlin</groupId>
@@ -90,9 +93,6 @@
       <plugin>
         <groupId>io.micronaut.maven</groupId>
         <artifactId>micronaut-maven-plugin</artifactId>
-        <configuration>
-          <configFile>aot-${packaging}.properties</configFile>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -102,7 +102,41 @@
         <groupId>org.jetbrains.kotlin</groupId>
         <artifactId>kotlin-maven-plugin</artifactId>
         <version>${kotlin.version}</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-maven-allopen</artifactId>
+            <version>${kotlin.version}</version>
+          </dependency>
+        </dependencies>
         <executions>
+          <execution>
+            <id>kapt</id>
+            <goals>
+              <goal>kapt</goal>
+            </goals>
+            <configuration>
+              <sourceDirs>
+                <sourceDir>src/main/kotlin</sourceDir>
+              </sourceDirs>
+              <annotationProcessorPaths>
+                <annotationProcessorPath>
+                  <groupId>io.micronaut</groupId>
+                  <artifactId>micronaut-inject-java</artifactId>
+                  <version>${micronaut.core.version}</version>
+                </annotationProcessorPath>
+                <annotationProcessorPath>
+                  <groupId>io.micronaut.serde</groupId>
+                  <artifactId>micronaut-serde-processor</artifactId>
+                  <version>${micronaut.serialization.version}</version>
+                </annotationProcessorPath>
+              </annotationProcessorPaths>
+              <annotationProcessorArgs>
+                <annotationProcessorArg>micronaut.processing.group=com.linxhealth</annotationProcessorArg>
+                <annotationProcessorArg>micronaut.processing.module=billing-service</annotationProcessorArg>
+              </annotationProcessorArgs>
+            </configuration>
+          </execution>
           <execution>
             <id>compile</id>
             <phase>compile</phase>
@@ -111,21 +145,73 @@
             </goals>
             <configuration>
               <sourceDirs>
-                <sourceDir>src/main/java</sourceDir>
-                <sourceDir>target/generated-sources/annotations</sourceDir>
+                <sourceDir>src/main/kotlin</sourceDir>
+                <sourceDir>target/generated-sources/kapt/compile</sourceDir>
               </sourceDirs>
+              <compilerPlugins>
+                <plugin>all-open</plugin>
+              </compilerPlugins>
+              <pluginOptions>
+                <option>all-open:annotation=io.micronaut.aop.Around</option>
+                <option>all-open:annotation=jakarta.inject.Singleton</option>
+                <option>all-open:annotation=io.micronaut.http.annotation.Controller</option>
+                <option>all-open:annotation=io.micronaut.context.annotation.Factory</option>
+                <option>all-open:annotation=io.micronaut.context.annotation.Requires</option>
+              </pluginOptions>
+            </configuration>
+          </execution>
+          <execution>
+            <id>test-kapt</id>
+            <goals>
+              <goal>test-kapt</goal>
+            </goals>
+            <configuration>
+              <sourceDirs>
+                <sourceDir>src/test/kotlin</sourceDir>
+              </sourceDirs>
+              <annotationProcessorPaths>
+                <annotationProcessorPath>
+                  <groupId>io.micronaut</groupId>
+                  <artifactId>micronaut-inject-java</artifactId>
+                  <version>${micronaut.core.version}</version>
+                </annotationProcessorPath>
+                <annotationProcessorPath>
+                  <groupId>io.micronaut.serde</groupId>
+                  <artifactId>micronaut-serde-processor</artifactId>
+                  <version>${micronaut.serialization.version}</version>
+                </annotationProcessorPath>
+              </annotationProcessorPaths>
+              <annotationProcessorArgs>
+                <annotationProcessorArg>micronaut.processing.group=com.linxhealth</annotationProcessorArg>
+                <annotationProcessorArg>micronaut.processing.module=billing-service</annotationProcessorArg>
+              </annotationProcessorArgs>
             </configuration>
           </execution>
           <execution>
             <id>test-compile</id>
-            <phase>test-compile</phase>
             <goals>
               <goal>test-compile</goal>
             </goals>
+            <configuration>
+              <sourceDirs>
+                <sourceDir>src/test/kotlin</sourceDir>
+                <sourceDir>target/generated-sources/kapt/test</sourceDir>
+              </sourceDirs>
+              <compilerPlugins>
+                <plugin>all-open</plugin>
+              </compilerPlugins>
+              <pluginOptions>
+                <option>all-open:annotation=io.micronaut.aop.Around</option>
+                <option>all-open:annotation=jakarta.inject.Singleton</option>
+                <option>all-open:annotation=io.micronaut.http.annotation.Controller</option>
+                <option>all-open:annotation=io.micronaut.context.annotation.Factory</option>
+                <option>all-open:annotation=io.micronaut.context.annotation.Requires</option>
+              </pluginOptions>
+            </configuration>
           </execution>
         </executions>
         <configuration>
-          <jvmTarget>1.8</jvmTarget>
+          <jvmTarget>21</jvmTarget>
         </configuration>
       </plugin>
       <plugin>
@@ -156,27 +242,7 @@
           </execution>
         </executions>
         <configuration>
-          <!-- Uncomment to enable incremental compilation -->
-          <!-- <useIncrementalCompilation>false</useIncrementalCompilation> -->
-
-          <annotationProcessorPaths combine.children="append">
-            <path>
-              <groupId>io.micronaut</groupId>
-              <artifactId>micronaut-http-validation</artifactId>
-              <version>${micronaut.core.version}</version>
-            </path>
-            <path>
-              <groupId>io.micronaut.serde</groupId>
-              <artifactId>micronaut-serde-processor</artifactId>
-              <version>${micronaut.serialization.version}</version>
-              <exclusions>
-                <exclusion>
-                  <groupId>io.micronaut</groupId>
-                  <artifactId>micronaut-inject</artifactId>
-                </exclusion>
-              </exclusions>
-            </path>
-          </annotationProcessorPaths>
+          <proc>none</proc>
           <compilerArgs>
             <arg>-Amicronaut.processing.group=com.linxhealth</arg>
             <arg>-Amicronaut.processing.module=billing-service</arg>
@@ -185,5 +251,4 @@
       </plugin>
     </plugins>
   </build>
-
 </project>
