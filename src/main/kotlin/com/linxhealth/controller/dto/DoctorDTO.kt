@@ -2,20 +2,23 @@ package com.linxhealth.controller.dto
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.linxhealth.model.Speciality
+import io.micronaut.serde.annotation.Serdeable
 
+@Serdeable
 data class DoctorRequest(
-    @JsonProperty("first_name") val firstName: String,
-    @JsonProperty("last_name") val lastName: String,
-    @JsonProperty("npi_number") val npiNumber: String,
+    @field:JsonProperty("first_name") val firstName: String,
+    @field:JsonProperty("last_name") val lastName: String,
+    @field:JsonProperty("npi_number") val npiNumber: String,
     val speciality: Speciality,
-    @JsonProperty("practice_start_date") val practiceStartDate: String  // dd/MM/yyyy
+    @field:JsonProperty("practice_start_date") val practiceStartDate: String  // dd/MM/yyyy
 )
 
+@Serdeable
 data class DoctorResponse(
     val id: Int,
-    @JsonProperty("first_name") val firstName: String,
-    @JsonProperty("last_name") val lastName: String,
-    @JsonProperty("npi_number") val npiNumber: String,
-    @JsonProperty("specialty") val speciality: Speciality,
-    @JsonProperty("practice_start_date") val practiceStartDate: String
+    @field:JsonProperty("first_name") val firstName: String,
+    @field:JsonProperty("last_name") val lastName: String,
+    @field:JsonProperty("npi_number") val npiNumber: String,
+    val speciality: Speciality,
+    @field:JsonProperty("practice_start_date") val practiceStartDate: String
 )

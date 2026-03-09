@@ -1,5 +1,6 @@
 package com.linxhealth.model
 
+import io.micronaut.serde.annotation.Serdeable
 import java.time.LocalDate
 
 data class Doctor(
@@ -11,6 +12,7 @@ data class Doctor(
     val speciality: Speciality
 )
 
+@Serdeable
 enum class Speciality {
     GENERAL,
     CARDIOLOGY,
