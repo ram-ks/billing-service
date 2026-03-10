@@ -28,7 +28,9 @@ class AppointmentRepositoryImpl: AppointmentRepository {
     }
 
     override fun delete(appointmentId: Int) {
-        TODO("Not yet implemented")
+        if (!store.containsKey(appointmentId))
+            throw IllegalArgumentException("Appointment with id $appointmentId not found")
+        store.remove(appointmentId)
     }
 
     override fun findAll(): List<Appointment> {

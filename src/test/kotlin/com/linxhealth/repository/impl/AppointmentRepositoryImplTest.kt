@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertNotNull
+import org.junit.jupiter.api.assertNull
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
@@ -106,6 +107,42 @@ class AppointmentRepositoryImplTest {
         appointmentRepository.save(appointment(patientId = 2))
 
         assertTrue(appointmentRepository.findByPatientId(1).isEmpty())
+    }
+
+    @Test
+    fun `delete should remove appointment from store`() {
+        val saved = appointmentRepository.save(appointment())
+
+        appointmentRepository.delete(saved.id!!)
+
+        assertNull(appointmentRepository.findById(saved.id!!))
+    }
+
+    @Test
+    fun `delete should reduce findAll size by one`() {
+        val first = appointmentRepository.save(appointment())
+        appointmentRepository.save(appointment())
+
+        appointmentRepository.delete(first.id!!)
+
+        assertEquals(1, appointmentRepository.findAll().size)
+    }
+
+    @Test
+    fun `delete should throw when id does not exist`() {
+        assertThrows(IllegalArgumentException::class.java) {
+            appointmentRepository.delete(999)
+        }
+    }
+
+    @Test
+    fun `delete should not affect other appointments`() {
+        val first = appointmentRepository.save(appointment(patientId = 1))
+        val second = appointmentRepository.save(appointment(patientId = 2))
+
+        appointmentRepository.delete(first.id!!)
+
+        assertNotNull(appointmentRepository.findById(second.id!!))
     }
 
 }

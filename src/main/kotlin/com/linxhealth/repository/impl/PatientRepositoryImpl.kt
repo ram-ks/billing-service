@@ -16,8 +16,8 @@ class PatientRepositoryImpl: PatientRepository {
         return newPatient
     }
 
-    override fun findById(id: Int): Patient? =
-        patientStore[id]
+    override fun findById(patientId: Int): Patient? =
+        patientStore[patientId]
 
     override fun findAll(): List<Patient> =
         patientStore.values.toList()
