@@ -26,12 +26,12 @@ data class AppointmentResponse(
 
 @Serdeable
 data class BillResponse(
-    @field:JsonProperty("base_fee") val baseFee: Double,
-    @field:JsonProperty("discount_percent") val discountPercent: Double,
+    val fee: Double,
+    @field:JsonProperty("discount_percentage") val discountPercentage: Double,
     @field:JsonProperty("discount_amount") val discountAmount: Double,
     @field:JsonProperty("amount_after_discount") val amountAfterDiscount: Double,
-    @field:JsonProperty("gst_amount") val gstAmount: Double,
+    @field:JsonProperty("tax_amount") val taxAmount: Double,
     @field:JsonProperty("total_amount") val totalAmount: Double,
-    @field:JsonProperty("insurance_amount") val insuranceAmount: Double,
+    @field:JsonProperty("insurance_amount") val amountCoveredByInsurance: Double,
     @field:JsonProperty("co_pay_amount") val coPayAmount: Double
 )

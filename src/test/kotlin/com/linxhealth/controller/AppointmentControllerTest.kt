@@ -6,7 +6,9 @@ import com.linxhealth.exception.NotFoundException
 import com.linxhealth.exception.ValidationException
 import com.linxhealth.model.Appointment
 import com.linxhealth.model.AppointmentStatus
+import com.linxhealth.model.Bill
 import com.linxhealth.service.AppointmentService
+import com.linxhealth.service.BillingService
 import io.micronaut.http.HttpStatus
 import io.micronaut.test.annotation.MockBean
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
@@ -25,8 +27,14 @@ class AppointmentControllerTest {
     @Inject
     lateinit var appointmentService: AppointmentService
 
+    @Inject
+    lateinit var billingService: BillingService
+
     @MockBean(AppointmentService::class)
     fun appointmentService(): AppointmentService = mock()
+
+    @MockBean(BillingService::class)
+    fun billingService(): BillingService = mock()
 
     private fun bookRequest() = AppointmentRequest(patientId = 1, doctorId = 1)
 
@@ -38,6 +46,17 @@ class AppointmentControllerTest {
     private fun completedAppointment() = Appointment(
         id = 1, patientId = 1, doctorId = 1,
         appointmentStatus = AppointmentStatus.COMPLETED,
+    )
+
+    private fun bill() = Bill(
+        fee = 2000.0,
+        discountPercentage = 0.0,
+        discountAmount = 0.0,
+        amountAfterDiscount = 2000.0,
+        taxAmount = 240.0,
+        afterTaxAndDiscount = 2240.0,
+        amountCoveredByInsurance = 2016.0,
+        coPayAmount = 224.0
     )
 
     @Test
@@ -168,5 +187,54 @@ class AppointmentControllerTest {
             .thenThrow(NotFoundException("Appointment not found with id: 99"))
 
         assertThrows<NotFoundException> { appointmentController.delete(99) }
+    }
+
+    @Test
+    fun `getBill should return 200 delegating to BillingService`() {
+        whenever(billingService.getBill(1)).thenReturn(bill())
+
+        val response = appointmentController.getBill(1)
+
+        assertEquals(HttpStatus.OK, response.status)
+        assertEquals(2000.0, response.body()?.fee)
+        assertEquals(240.0, response.body()?.taxAmount)
+        assertEquals(2240.0, response.body()?.totalAmount)
+        assertEquals(2016.0, response.body()?.amountCoveredByInsurance)
+        assertEquals(224.0, response.body()?.coPayAmount)
+    }
+
+    @Test
+    fun `getBill should propagate ValidationException for non-complete appointment`() {
+        whenever(billingService.getBill(1))
+            .thenThrow(ValidationException("Bill is only available for COMPLETE appointments"))
+
+        assertThrows<ValidationException> { appointmentController.getBill(1) }
+    }
+
+    @Test
+    fun `getBill should propagate NotFoundException when appointment does not exist`() {
+        whenever(billingService.getBill(99))
+            .thenThrow(NotFoundException("Appointment not found with id: 99"))
+
+        assertThrows<NotFoundException> { appointmentController.getBill(99) }
+    }
+
+    @Test
+    fun `getBill should reflect discounted bill from BillingService`() {
+        val discountedBill = bill().copy(
+            discountPercentage = 3.0,
+            discountAmount = 60.0,
+            amountAfterDiscount = 1940.0,
+            taxAmount = 232.8,
+            afterTaxAndDiscount = 2172.8,
+            amountCoveredByInsurance = 1955.52,
+            coPayAmount = 217.28
+        )
+        whenever(billingService.getBill(1)).thenReturn(discountedBill)
+
+        val response = appointmentController.getBill(1)
+
+        assertEquals(3.0, response.body()?.discountPercentage)
+        assertEquals(2172.8, response.body()?.totalAmount)
     }
 }

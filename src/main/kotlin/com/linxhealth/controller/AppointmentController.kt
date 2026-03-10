@@ -2,9 +2,11 @@ package com.linxhealth.controller
 
 import com.linxhealth.controller.dto.AppointmentRequest
 import com.linxhealth.controller.dto.AppointmentResponse
+import com.linxhealth.controller.dto.BillResponse
 import com.linxhealth.controller.dto.UpdateStatusRequest
 import com.linxhealth.controller.mapper.toResponse
 import com.linxhealth.service.AppointmentService
+import com.linxhealth.service.BillingService
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Controller
@@ -16,7 +18,8 @@ import io.micronaut.http.annotation.Post
 
 @Controller("/appointments")
 class AppointmentController(
-    private val appointmentService: AppointmentService
+    private val appointmentService: AppointmentService,
+    private val billingService: BillingService
 ) {
     @Post
     fun book(@Body request: AppointmentRequest): HttpResponse<AppointmentResponse> =
@@ -46,4 +49,8 @@ class AppointmentController(
         appointmentService.delete(id)
         return HttpResponse.noContent()
     }
+
+    @Get("/{id}/bill")
+    fun getBill(@PathVariable id: Int): HttpResponse<BillResponse> =
+        HttpResponse.ok(billingService.getBill(id).toResponse())
 }
