@@ -1,5 +1,7 @@
 package com.linxhealth.service
 
+import com.linxhealth.common.ConsultationFeeKey
+import com.linxhealth.common.FeeResolver
 import com.linxhealth.exception.NotFoundException
 import com.linxhealth.exception.ValidationException
 import com.linxhealth.model.Appointment
@@ -16,6 +18,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito.mock
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.whenever
 import java.time.LocalDate
 
@@ -23,6 +26,7 @@ class BillingServiceTest {
     private lateinit var appointmentRepository: AppointmentRepository
     private lateinit var patientRepository: PatientRepository
     private lateinit var doctorRepository: DoctorRepository
+    private lateinit var feeResolver: FeeResolver<ConsultationFeeKey>
     private lateinit var billingService: BillingService
 
     private fun doctor() = Doctor(
@@ -42,11 +46,12 @@ class BillingServiceTest {
         status: AppointmentStatus = AppointmentStatus.COMPLETED
     ) = Appointment(id = id, patientId = 1, doctorId = 1, appointmentStatus = status)
 
-    private fun setupCompletedAppointment() {
+    private fun setupCompletedAppointment(baseFee: Double = 2000.0) {
         whenever(appointmentRepository.findById(1)).thenReturn(appointment())
         whenever(patientRepository.findById(1)).thenReturn(patient())
         whenever(doctorRepository.findById(1)).thenReturn(doctor())
         whenever(appointmentRepository.findByPatientId(1)).thenReturn(emptyList())
+        whenever(feeResolver.resolveFee(anyOrNull())).thenReturn(baseFee)
     }
 
     @BeforeEach
@@ -54,7 +59,8 @@ class BillingServiceTest {
         appointmentRepository = mock()
         patientRepository = mock()
         doctorRepository = mock()
-        billingService = BillingService(appointmentRepository, patientRepository, doctorRepository)
+        feeResolver = mock()
+        billingService = BillingService(appointmentRepository, patientRepository, doctorRepository, feeResolver)
     }
 
     @Test
@@ -190,5 +196,23 @@ class BillingServiceTest {
         assertEquals(2240.0, bill.afterTaxAndDiscount)
         assertEquals(2016.0, bill.amountCoveredByInsurance)
         assertEquals(224.0, bill.coPayAmount)
+    }
+
+    @Test
+    fun `getBill should use feeResolver to get base fee`() {
+        setupCompletedAppointment(baseFee = 2000.0)
+
+        val bill = billingService.getBill(1)
+
+        assertEquals(2000.0, bill.fee)
+    }
+
+    @Test
+    fun `getBill should use feeResolver result regardless of specialty`() {
+        setupCompletedAppointment(baseFee = 1500.0)
+
+        val bill = billingService.getBill(1)
+
+        assertEquals(1500.0, bill.fee)
     }
 }

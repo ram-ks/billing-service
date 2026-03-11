@@ -11,12 +11,12 @@ object BillCalculator {
         val discount = fee * (mininmumDiscount / 100)
         val discountedAmount = fee - discount
 
-        // apply tax
+        // step2: apply tax
         // TODO: remove magic numbers
         val withTax = discountedAmount * 0.12
         val afterTaxAndDiscount = discountedAmount + withTax
 
-        // insurance amount
+        // step3: insurance amount
         // TODO: remove magic numbers
         val amountCoveredByInsurance = afterTaxAndDiscount * 0.90
         val coPayAmount = afterTaxAndDiscount - amountCoveredByInsurance
