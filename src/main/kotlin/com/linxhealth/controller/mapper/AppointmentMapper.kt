@@ -15,12 +15,12 @@ fun Appointment.toResponse(): AppointmentResponse =
 
 fun Bill.toResponse(): BillResponse =
     BillResponse(
-        fee = fee,
-        discountPercentage = discountPercentage,
-        discountAmount = discountAmount,
-        amountAfterDiscount = amountAfterDiscount,
-        taxAmount = taxAmount,
-        totalAmount = afterTaxAndDiscount,
-        amountCoveredByInsurance = amountCoveredByInsurance,
-        coPayAmount = coPayAmount
+        fee = fee.toBigDecimal(),
+        discountPercentage = discountPercentage.toBigDecimal(),
+        discountAmount = discountAmount.toBigDecimal(),
+        amountAfterDiscount = amountAfterDiscount.toBigDecimal(),
+        taxAmount = taxAmount.toBigDecimal(),
+        totalAmount = afterTaxAndDiscount.toBigDecimal(),
+        amountCoveredByInsurance = amountCoveredByInsurance.toBigDecimal(),
+        coPayAmount = coPayAmount.toBigDecimal(),
     )

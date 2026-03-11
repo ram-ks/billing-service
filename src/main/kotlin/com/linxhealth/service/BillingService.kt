@@ -42,7 +42,7 @@ class BillingService(
             ?: throw NotFoundException("Doctor not found with id: $appointmentId")
 
         val completedAppointmentCount = appointmentRepository.findByPatientId(appointment.patientId)
-            .count { it.appointmentStatus == AppointmentStatus.COMPLETED && it.id != appointmentId }
+            .count { it.appointmentStatus == AppointmentStatus.COMPLETED }
 
         val baseFee = getConsultationFee(doctor)
 

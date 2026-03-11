@@ -1,5 +1,6 @@
 package com.linxhealth.controller.mapper
 
+import com.linxhealth.common.Constants.DOB_FORMATTER
 import com.linxhealth.controller.dto.InsuranceRequest
 import com.linxhealth.controller.dto.InsuranceResponse
 import com.linxhealth.controller.dto.PatientRequest
@@ -7,9 +8,6 @@ import com.linxhealth.controller.dto.PatientResponse
 import com.linxhealth.model.Insurance
 import com.linxhealth.model.Patient
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-
-private val DOB_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
 fun PatientRequest.toModel(): Patient {
     return Patient(

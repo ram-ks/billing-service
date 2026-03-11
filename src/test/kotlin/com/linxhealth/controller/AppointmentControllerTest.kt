@@ -196,11 +196,11 @@ class AppointmentControllerTest {
         val response = appointmentController.getBill(1)
 
         assertEquals(HttpStatus.OK, response.status)
-        assertEquals(2000.0, response.body()?.fee)
-        assertEquals(240.0, response.body()?.taxAmount)
-        assertEquals(2240.0, response.body()?.totalAmount)
-        assertEquals(2016.0, response.body()?.amountCoveredByInsurance)
-        assertEquals(224.0, response.body()?.coPayAmount)
+        assertEquals("2000.0", response.body()?.fee.toString())
+        assertEquals("240.0", response.body()?.taxAmount.toString())
+        assertEquals("2240.0", response.body()?.totalAmount.toString())
+        assertEquals("2016.0", response.body()?.amountCoveredByInsurance.toString())
+        assertEquals("224.0", response.body()?.coPayAmount.toString())
     }
 
     @Test
@@ -234,7 +234,7 @@ class AppointmentControllerTest {
 
         val response = appointmentController.getBill(1)
 
-        assertEquals(3.0, response.body()?.discountPercentage)
-        assertEquals(2172.8, response.body()?.totalAmount)
+        assertEquals("3.0", response.body()?.discountPercentage.toString())
+        assertEquals("2172.8", response.body()?.totalAmount.toString())
     }
 }

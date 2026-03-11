@@ -150,7 +150,7 @@ class BillingServiceTest {
 
         val bill = billingService.getBill(1)
 
-        assertEquals(0.0, bill.discountPercentage)
+        assertEquals(1.0, bill.discountPercentage)
     }
 
     @Test

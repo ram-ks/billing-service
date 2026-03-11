@@ -36,21 +36,21 @@ class AppointmentController(
             appointmentService.updateStatus(id, request.status).toResponse()
         )
 
-    @Get("/{id}")
-    fun getById(@PathVariable id: Int): HttpResponse<AppointmentResponse> =
-        HttpResponse.ok(appointmentService.getByID(id).toResponse())
-
     @Get
     fun getAll(): HttpResponse<List<AppointmentResponse>> =
         HttpResponse.ok(appointmentService.getAll().map { it.toResponse() })
+
+    @Get("/{id}/bill")
+    fun getBill(@PathVariable id: Int): HttpResponse<BillResponse> =
+        HttpResponse.ok(billingService.getBill(id).toResponse())
+
+    @Get("/{id}")
+    fun getById(@PathVariable id: Int): HttpResponse<AppointmentResponse> =
+        HttpResponse.ok(appointmentService.getByID(id).toResponse())
 
     @Delete("/{id}")
     fun delete(@PathVariable id: Int): HttpResponse<Unit> {
         appointmentService.delete(id)
         return HttpResponse.noContent()
     }
-
-    @Get("/{id}/bill")
-    fun getBill(@PathVariable id: Int): HttpResponse<BillResponse> =
-        HttpResponse.ok(billingService.getBill(id).toResponse())
 }

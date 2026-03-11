@@ -19,7 +19,7 @@
     <micronaut.runtime>netty</micronaut.runtime>
     <micronaut.aot.enabled>false</micronaut.aot.enabled>
     <micronaut.aot.packageName>com.linxhealth.aot.generated</micronaut.aot.packageName>
-    <exec.mainClass>com.linxhealth.Application</exec.mainClass>
+    <exec.mainClass>com.linxhealth.ApplicationKt</exec.mainClass>
     <kotlin.version>2.2.20</kotlin.version>
   </properties>
 
@@ -89,6 +89,8 @@
     </dependency>
   </dependencies>
   <build>
+    <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
+    <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
     <plugins>
       <plugin>
         <groupId>io.micronaut.maven</groupId>

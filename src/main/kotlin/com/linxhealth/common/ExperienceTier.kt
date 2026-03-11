@@ -1,9 +1,16 @@
 package com.linxhealth.common
 
+import com.linxhealth.common.Constants.JUNIOR_MAX
+import com.linxhealth.common.Constants.MAX_YEARS
+import com.linxhealth.common.Constants.MID_MAX
+import com.linxhealth.common.Constants.MID_MIN
+import com.linxhealth.common.Constants.MIN_YEARS
+import com.linxhealth.common.Constants.SENIOR_MIN
+
 enum class ExperienceTier(val minYears: Int, val maxYears: Int) {
-    JUNIOR(0, 19),
-    MID(20, 29),
-    SENIOR(30, 70);
+    JUNIOR(MIN_YEARS, JUNIOR_MAX),
+    MID(MID_MIN, MID_MAX),
+    SENIOR(SENIOR_MIN, MAX_YEARS);
 
     companion object {
         fun from(years: Int): ExperienceTier {
