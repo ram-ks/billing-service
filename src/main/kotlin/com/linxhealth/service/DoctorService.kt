@@ -15,10 +15,6 @@ class DoctorService(private val doctorRepository: DoctorRepository) {
         return doctorRepository.save(doctor)
     }
 
-    fun findByNpiNumber(npiNumber: String): Doctor? {
-        return doctorRepository.findByNpiNumber(npiNumber)
-    }
-
     fun getAll(): List<Doctor> {
         return doctorRepository.findAll()
     }

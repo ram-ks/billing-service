@@ -20,7 +20,8 @@ class BillingService(
     private val appointmentRepository: AppointmentRepository,
     private val patientRepository: PatientRepository,
     private val doctorRepository: DoctorRepository,
-    private val feeResolver: FeeResolver<ConsultationFeeKey>
+    private val feeResolver: FeeResolver<ConsultationFeeKey>,
+    private val billCalculator: BillCalculator
 ) {
     fun getBill(appointmentId: Int): Bill {
         val appointment = appointmentRepository.findById(appointmentId)
@@ -42,11 +43,11 @@ class BillingService(
             ?: throw NotFoundException("Doctor not found with id: $appointmentId")
 
         val completedAppointmentCount = appointmentRepository.findByPatientId(appointment.patientId)
-            .count { it.appointmentStatus == AppointmentStatus.COMPLETED }
+            .count { it.appointmentStatus == AppointmentStatus.COMPLETED && it.id != appointmentId }
 
         val baseFee = getConsultationFee(doctor)
 
-        return BillCalculator.calculate(baseFee, completedAppointmentCount)
+        return billCalculator.calculate(baseFee, completedAppointmentCount)
     }
 
     private fun getConsultationFee(doctor: Doctor): Double {

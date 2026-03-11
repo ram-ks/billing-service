@@ -21,4 +21,9 @@
 
 - [Micronaut Serialization Jackson Core documentation](https://micronaut-projects.github.io/micronaut-serialization/latest/guide/)
 
+Not considered for now:
+- booking appointments per date
+- checking duplicate appointments
+- update and delete for patients and doctors
+
 

@@ -5,10 +5,12 @@ import com.linxhealth.common.Constants.HUNDRED
 import com.linxhealth.common.Constants.INSURANCE_COVERAGE
 import com.linxhealth.common.Constants.MAX_DISCOUNT
 import com.linxhealth.model.Bill
+import jakarta.inject.Singleton
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-object BillCalculator {
+@Singleton
+class BillCalculator {
     fun calculate(fee: Double, completedAppointments: Int): Bill {
         val base = BigDecimal(fee)
 

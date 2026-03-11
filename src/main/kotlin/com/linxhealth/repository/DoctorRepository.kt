@@ -7,5 +7,4 @@ interface DoctorRepository {
     fun findById(doctorId: Int): Doctor?
     fun findByNpiNumber(npiNumber: String): Doctor?
     fun findAll(): List<Doctor>
-    //TODO: add support for update and delete
 }

@@ -3,14 +3,15 @@ package com.linxhealth.repository.impl
 import com.linxhealth.model.Patient
 import com.linxhealth.repository.PatientRepository
 import jakarta.inject.Singleton
+import java.util.concurrent.atomic.AtomicInteger
 
 @Singleton
 class PatientRepositoryImpl: PatientRepository {
     private val patientStore = mutableMapOf<Int, Patient>()
-    private var idCounter = 1
+    private var idCounter: AtomicInteger = AtomicInteger(0)
 
     override fun save(patient: Patient): Patient {
-        val id = patient.id ?: idCounter++
+        val id = patient.id ?: idCounter.incrementAndGet()
         val newPatient = patient.copy(id = id)
         patientStore[id] = newPatient
         return newPatient
