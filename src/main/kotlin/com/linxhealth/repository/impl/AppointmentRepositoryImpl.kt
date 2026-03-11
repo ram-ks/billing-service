@@ -3,16 +3,14 @@ package com.linxhealth.repository.impl
 import com.linxhealth.model.Appointment
 import com.linxhealth.repository.AppointmentRepository
 import jakarta.inject.Singleton
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.atomic.AtomicInteger
 
 @Singleton
 class AppointmentRepositoryImpl: AppointmentRepository {
-    private val store: ConcurrentHashMap<Int, Appointment> = ConcurrentHashMap();
-    private val idCounter: AtomicInteger = AtomicInteger()
+    private val store = mutableMapOf<Int, Appointment>()
+    private var idCounter = 0
 
     override fun save(appointment: Appointment): Appointment {
-        val id = appointment.id ?: idCounter.incrementAndGet()
+        val id = appointment.id ?: ++idCounter
         val appointment = appointment.copy(id = id)
         store[id] = appointment
         return appointment

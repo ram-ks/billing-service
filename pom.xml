@@ -264,7 +264,7 @@
           </execution>
           <execution>
             <id>kover-report</id>
-            <phase>test</phase>
+            <phase>verify</phase>
             <goals>
               <goal>report-html</goal>
             </goals>

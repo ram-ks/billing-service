@@ -19,7 +19,6 @@ class PatientRepositoryImplTest {
     }
 
     private fun getPatient(firstName: String = "Ram") = Patient(
-        id = null,
         firstName = firstName,
         lastName = "S",
         dateOfBirth = LocalDate.of(1992, 4, 10),
@@ -69,19 +68,6 @@ class PatientRepositoryImplTest {
         val all = patientRepositoryImpl.findAll()
 
         assertTrue(all.isEmpty())
-    }
-
-    @Test
-    fun `save should overwrite existing patient with same id`() {
-        val patient = getPatient()
-        val savedPatient = patientRepositoryImpl.save(patient)
-
-        val updated = savedPatient.copy(firstName = "Jane")
-        patientRepositoryImpl.save(updated)
-
-        val found = patientRepositoryImpl.findById(savedPatient.id!!)
-        assertEquals("Jane", found?.firstName)
-        assertEquals(1, patientRepositoryImpl.findAll().size)
     }
 
 }

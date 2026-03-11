@@ -8,5 +8,5 @@ interface AppointmentRepository {
     fun findById(appointmentId: Int): Appointment?
     fun delete(appointmentId: Int)
     fun findByPatientId(patientId: Int): List<Appointment>
-    fun findAll(): List<Appointment> // should return last 10 appointments
+    fun findAll(): List<Appointment>
 }
