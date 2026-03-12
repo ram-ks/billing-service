@@ -1,17 +1,6 @@
 #!/bin/bash
 
 BASE_URL="http://localhost:8080"
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-CYAN='\033[0;36m'
-NC='\033[0m' # No Color
-
-echo -e "${CYAN}========================================${NC}"
-echo -e "${CYAN}   Billing Service - Seed Data Script   ${NC}"
-echo -e "${CYAN}========================================${NC}\n"
-
-# ── helpers ──────────────────────────────────────────────────────────────────
 
 post() {
     local url=$1
@@ -34,16 +23,14 @@ extract_id() {
 }
 
 check_server() {
-    echo -e "${YELLOW}Checking server is up...${NC}"
+    echo -e "Checking server is up..."
     response=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/patients")
     if [ "$response" != "200" ]; then
-        echo -e "${RED}Server not reachable at $BASE_URL (HTTP $response). Is mn:run running?${NC}"
+        echo -e "Server not reachable at $BASE_URL (HTTP $response). Is mn:run running?"
         exit 1
     fi
-    echo -e "${GREEN}Server is up.${NC}\n"
+    echo -e "Server is up.\n"
 }
-
-# ── doctor data ───────────────────────────────────────────────────────────────
 
 declare -a DOCTOR_PAYLOADS=(
     '{"first_name":"Alexander","last_name":"Flemming","npi_number":"NPI1001","speciality":"CARDIOLOGY","practice_start_date":"01/06/1995"}'
@@ -58,8 +45,6 @@ declare -a DOCTOR_PAYLOADS=(
     '{"first_name":"Upendra","last_name":"Nath","npi_number":"NPI1010","speciality":"ORTHOPEDICS","practice_start_date":"03/12/1999"}'
 )
 
-# ── patient data ──────────────────────────────────────────────────────────────
-
 declare -a PATIENT_PAYLOADS=(
     '{"first_name":"John","last_name":"Doe","dob":"15/01/1990","age":34,"insurance":{"bin_number":1001,"pcn_number":"PCN001","member_id":"MEM001"}}'
     '{"first_name":"Jane","last_name":"Smith","dob":"22/05/1985","age":39,"insurance":{"bin_number":1002,"pcn_number":"PCN002","member_id":"MEM002"}}'
@@ -73,38 +58,36 @@ declare -a PATIENT_PAYLOADS=(
     '{"first_name":"Elon","last_name":"Musk","dob":"11/08/2002","age":22,"insurance":{"bin_number":1010,"pcn_number":"PCN010","member_id":"MEM010"}}'
 )
 
-# ── main ──────────────────────────────────────────────────────────────────────
-
 check_server
 
 # Step 1 — Register 10 doctors
-echo -e "${YELLOW}Step 1: Registering 10 doctors...${NC}"
+echo -e "Step 1: Registering 10 doctors..."
 declare -a DOCTOR_IDS=()
 
 for i in "${!DOCTOR_PAYLOADS[@]}"; do
     response=$(post "$BASE_URL/doctors" "${DOCTOR_PAYLOADS[$i]}")
     id=$(extract_id "$response")
     DOCTOR_IDS+=("$id")
-    echo -e "  ${GREEN}✓${NC} Doctor $((i+1)) registered → id=$id"
+    echo -e "Doctor $((i+1)) registered → id=$id"
 done
 
-echo -e "\n${GREEN}Doctors registered: ${DOCTOR_IDS[*]}${NC}\n"
+echo -e "\nDoctors registered: ${DOCTOR_IDS[*]}\n"
 
 # Step 2 — Register 10 patients
-echo -e "${YELLOW}Step 2: Registering 10 patients...${NC}"
+echo -e "Step 2: Registering 10 patients..."
 declare -a PATIENT_IDS=()
 
 for i in "${!PATIENT_PAYLOADS[@]}"; do
     response=$(post "$BASE_URL/patients" "${PATIENT_PAYLOADS[$i]}")
     id=$(extract_id "$response")
     PATIENT_IDS+=("$id")
-    echo -e "  ${GREEN}✓${NC} Patient $((i+1)) registered → id=$id"
+    echo -e "Patient $((i+1)) registered → id=$id"
 done
 
-echo -e "\n${GREEN}Patients registered: ${PATIENT_IDS[*]}${NC}\n"
+echo -e "\nPatients registered: ${PATIENT_IDS[*]}\n"
 
 # Step 3 — Book 5 appointments per patient (round-robin across doctors)
-echo -e "${YELLOW}Step 3: Booking 5 appointments per patient...${NC}"
+echo -e "Step 3: Booking 5 appointments per patient..."
 declare -a APPOINTMENT_IDS=()
 DOCTOR_COUNT=${#DOCTOR_IDS[@]}
 
@@ -117,14 +100,14 @@ for patient_id in "${PATIENT_IDS[@]}"; do
             "{\"patient_id\":$patient_id,\"doctor_id\":$doctor_id}")
         id=$(extract_id "$response")
         APPOINTMENT_IDS+=("$id")
-        echo -e "  ${GREEN}✓${NC} Appointment booked → id=$id (patient=$patient_id, doctor=$doctor_id)"
+        echo -e "Appointment booked → id=$id (patient=$patient_id, doctor=$doctor_id)"
     done
 done
 
-echo -e "\n${GREEN}Appointments booked: ${#APPOINTMENT_IDS[@]} total${NC}\n"
+echo -e "\nAppointments booked: ${#APPOINTMENT_IDS[@]} total\n"
 
 # Step 3b — Extra appointments for specific patients to hit target totals
-echo -e "${YELLOW}Step 3b: Booking extra appointments for Patient 1, 2 and 3...${NC}"
+echo -e "Step 3b: Booking extra appointments for Patient 1, 2 and 3..."
 
 declare -A EXTRA_APPOINTMENTS=(
     [0]=7   # Patient 1 index → 7 more
@@ -136,7 +119,7 @@ for patient_index in "${!EXTRA_APPOINTMENTS[@]}"; do
     patient_id=${PATIENT_IDS[$patient_index]}
     extra_count=${EXTRA_APPOINTMENTS[$patient_index]}
     target=$(( 5 + extra_count ))
-    echo -e "\n  ${CYAN}Patient $((patient_index + 1)) (id=$patient_id) — adding $extra_count appointments (target: $target total)${NC}"
+    echo -e "\n Patient $((patient_index + 1)) (id=$patient_id) — adding $extra_count appointments (target: $target total)"
 
     for appt_num in $(seq 1 "$extra_count"); do
         doctor_index=$(( (5 + appt_num - 1) % DOCTOR_COUNT ))
@@ -146,36 +129,31 @@ for patient_index in "${!EXTRA_APPOINTMENTS[@]}"; do
             "{\"patient_id\":$patient_id,\"doctor_id\":$doctor_id}")
         id=$(extract_id "$response")
         if [ -z "$id" ]; then
-            echo -e "  ${RED}✗${NC} Extra appointment failed (patient=$patient_id, doctor=$doctor_id) → $response"
+            echo -e " Extra appointment failed (patient=$patient_id, doctor=$doctor_id) → $response"
             exit 1
         fi
         APPOINTMENT_IDS+=("$id")
-        echo -e "  ${GREEN}✓${NC} Extra appointment booked → id=$id (patient=$patient_id, doctor=$doctor_id)"
+        echo -e "Extra appointment booked → id=$id (patient=$patient_id, doctor=$doctor_id)"
     done
 done
 
-echo -e "\n${GREEN}Extra appointments booked. Running total: ${#APPOINTMENT_IDS[@]}${NC}\n"
+echo -e "\nExtra appointments booked. Running total: ${#APPOINTMENT_IDS[@]}\n"
 
 # Step 4 — Mark all appointments as COMPLETE
-echo -e "${YELLOW}Step 4: Completing all appointments...${NC}"
+echo -e "Step 4: Completing all appointments..."
 
 for appt_id in "${APPOINTMENT_IDS[@]}"; do
     response=$(patch "$BASE_URL/appointments/$appt_id/status" \
         '{"status":"COMPLETED"}')
-    echo -e "  ${GREEN}✓${NC} Appointment $appt_id → COMPLETED"
+    echo -e "   Appointment $appt_id → COMPLETED"
 done
 
-echo -e "\n${GREEN}All appointments marked COMPLETED.${NC}\n"
-
-echo -e "${CYAN}========================================${NC}"
-echo -e "${CYAN}             Seed Complete              ${NC}"
-echo -e "${CYAN}========================================${NC}"
+echo -e "\nAll appointments marked COMPLETED.\n"
 echo -e "  Doctors       : ${#DOCTOR_IDS[@]}"
 echo -e "  Patients      : ${#PATIENT_IDS[@]}"
 echo -e "  Appointments  : ${#APPOINTMENT_IDS[@]}"
 echo -e ""
-echo -e "${YELLOW}To get a bill, run:${NC}"
+echo -e "To get a bill, run:"
 echo -e "  curl http://localhost:8080/appointments/{id}/bill"
 echo -e ""
-echo -e "${YELLOW}Appointment IDs:${NC} ${APPOINTMENT_IDS[*]}"
-echo -e "${CYAN}========================================${NC}\n"
+echo -e "Appointment IDs: ${APPOINTMENT_IDS[*]}"

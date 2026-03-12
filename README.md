@@ -123,6 +123,10 @@ This would create sample patients, doctors and appointments, we can then directl
 ### Layered architecture
 Controller → Service → Repository, with no layer skipping. Each layer has a single responsibility.
 
+### Domain Entities
+`Patient`,`Doctor`,`Appointment`,`Insurance`,`Bill`
+They have their respective DTOs
+
 ### Repository interface pattern
 `PatientRepository`, `DoctorRepository`, `AppointmentRepository` are interfaces. In-memory implementations are swappable with a real DB implementation without touching the service layer.
 
@@ -133,4 +137,4 @@ Fee lookup is abstracted behind `FeeResolver<ConsultationFeeKey>`. `BillingServi
 Experience ranges (JUNIOR / MID / SENIOR) are modelled as an enum with `minYears` and `maxYears`. Adding a new tier requires only a new enum entry — no `when` branches scattered across the codebase.
 
 ### Bill calculated on demand
-The bill is not stored on the appointment. `GET /appointments/{id}/bill` always computes a fresh bill from current data. This keeps the `Appointment` model clean and avoids stale billing data.
+The bill is not stored on the appointment. `GET /appointments/{id}/bill` always computes a fresh bill from current data.
