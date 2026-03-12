@@ -33,7 +33,7 @@ class BillCalculator {
             amountAfterDiscount = discountedAmount.toDouble(),
             amountCoveredByInsurance = amountCoveredByInsurance.toDouble(),
             coPayAmount = coPayAmount.toDouble(),
-            afterTaxAndDiscount = afterTaxAndDiscount.toDouble(),
+            totalAfterTaxAndDiscount = afterTaxAndDiscount.toDouble(),
             discountAmount = discount.toDouble(),
             taxAmount = withTax.toDouble(),
         )

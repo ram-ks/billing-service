@@ -54,7 +54,7 @@ class AppointmentControllerTest {
         discountAmount = 0.0,
         amountAfterDiscount = 2000.0,
         taxAmount = 240.0,
-        afterTaxAndDiscount = 2240.0,
+        totalAfterTaxAndDiscount = 2240.0,
         amountCoveredByInsurance = 2016.0,
         coPayAmount = 224.0
     )
@@ -226,7 +226,7 @@ class AppointmentControllerTest {
             discountAmount = 60.0,
             amountAfterDiscount = 1940.0,
             taxAmount = 232.8,
-            afterTaxAndDiscount = 2172.8,
+            totalAfterTaxAndDiscount = 2172.8,
             amountCoveredByInsurance = 1955.52,
             coPayAmount = 217.28
         )

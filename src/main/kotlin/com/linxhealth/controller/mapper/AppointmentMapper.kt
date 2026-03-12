@@ -20,7 +20,7 @@ fun Bill.toResponse(): BillResponse =
         discountAmount = discountAmount.toBigDecimal(),
         amountAfterDiscount = amountAfterDiscount.toBigDecimal(),
         taxAmount = taxAmount.toBigDecimal(),
-        totalAmount = afterTaxAndDiscount.toBigDecimal(),
+        totalAmount = totalAfterTaxAndDiscount.toBigDecimal(),
         amountCoveredByInsurance = amountCoveredByInsurance.toBigDecimal(),
         coPayAmount = coPayAmount.toBigDecimal(),
     )

@@ -68,7 +68,7 @@ class BillingServiceTest {
         discountAmount = discountAmount,
         amountAfterDiscount = amountAfterDiscount,
         taxAmount = taxAmount,
-        afterTaxAndDiscount = afterTaxAndDiscount,
+        totalAfterTaxAndDiscount = afterTaxAndDiscount,
         amountCoveredByInsurance = amountCoveredByInsurance,
         coPayAmount = coPayAmount
     )
@@ -157,7 +157,7 @@ class BillingServiceTest {
         val bill = billingService.getBill(1)
 
         assertEquals(240.0, bill.taxAmount)
-        assertEquals(2240.0, bill.afterTaxAndDiscount)
+        assertEquals(2240.0, bill.totalAfterTaxAndDiscount)
         assertEquals(2016.0, bill.amountCoveredByInsurance)
         assertEquals(224.0, bill.coPayAmount)
     }

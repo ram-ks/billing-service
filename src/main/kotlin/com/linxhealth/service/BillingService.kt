@@ -5,6 +5,7 @@ import com.linxhealth.common.ConsultationFeeKey
 import com.linxhealth.common.FeeResolver
 import com.linxhealth.exception.NotFoundException
 import com.linxhealth.exception.ValidationException
+import com.linxhealth.model.Appointment
 import com.linxhealth.model.AppointmentStatus
 import com.linxhealth.model.Bill
 import com.linxhealth.model.Doctor
@@ -24,27 +25,28 @@ class BillingService(
     private val billCalculator: BillCalculator
 ) {
     fun getBill(appointmentId: Int): Bill {
+        val (appointment, doctor) = validateAppointment(appointmentId)
+        return calculateBill(appointmentId, appointment.patientId, doctor)
+    }
+
+    private fun validateAppointment(appointmentId: Int): Pair<Appointment, Doctor> {
         val appointment = appointmentRepository.findById(appointmentId)
             ?: throw NotFoundException("Appointment not found with id: $appointmentId")
 
         if (appointment.appointmentStatus != AppointmentStatus.COMPLETED)
             throw ValidationException("Bill is only available for COMPLETED appointments")
-        return calculateBill(appointmentId)
-    }
-
-    fun calculateBill(appointmentId: Int): Bill {
-        val appointment = appointmentRepository.findById(appointmentId)
-            ?: throw NotFoundException("Appointment not found with id: $appointmentId")
 
         patientRepository.findById(appointment.patientId)
             ?: throw NotFoundException("Patient not found with id: $appointmentId")
 
         val doctor = doctorRepository.findById(appointment.doctorId)
             ?: throw NotFoundException("Doctor not found with id: $appointmentId")
+        return Pair(appointment, doctor)
+    }
 
-        val completedAppointmentCount = appointmentRepository.findByPatientId(appointment.patientId)
+    private fun calculateBill(appointmentId: Int, patientId: Int, doctor: Doctor): Bill {
+        val completedAppointmentCount = appointmentRepository.findByPatientId(patientId)
             .count { it.appointmentStatus == AppointmentStatus.COMPLETED && it.id != appointmentId }
-
         val baseFee = getConsultationFee(doctor)
 
         return billCalculator.calculate(baseFee, completedAppointmentCount)
